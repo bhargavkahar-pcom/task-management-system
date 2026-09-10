@@ -27,3 +27,11 @@ export interface RegisterUserResponse {
   email: string;
   createdAt?: Date;
 }
+
+export interface CurrentUserResponse {
+  id: string;
+  name: string;
+  email: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}

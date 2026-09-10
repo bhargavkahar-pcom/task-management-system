@@ -16,7 +16,10 @@ const app: Application = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan("dev"));
+
+if (config.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
 
 // Health check
 app.get(`${config.API_PREFIX}/health`, (req, res) => {

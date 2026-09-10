@@ -3,6 +3,7 @@ import User from "@models/user.model.js";
 import { ApiError } from "@utils/api-error.js";
 import { generateAccessToken, generateRefreshToken } from "@utils/jwt.js";
 import type {
+  CurrentUserResponse,
   LoginUserInput,
   LoginUserResponse,
   RegisterUserInput,
@@ -79,5 +80,27 @@ export const registerUser = async (
     name: user.name,
     email: user.email,
     createdAt: user.createdAt,
+  };
+};
+
+export const getCurrentUser = async (
+  userId: string,
+): Promise<CurrentUserResponse> => {
+  const user = await User.findById(userId).select("-password");
+
+  if (!user) {
+    throw new ApiError(
+      HTTP_STATUS.NOT_FOUND,
+      "USER_NOT_FOUND",
+      "User not found",
+    );
+  }
+
+  return {
+    id: user._id.toString(),
+    name: user.name,
+    email: user.email,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
   };
 };
