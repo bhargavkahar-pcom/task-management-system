@@ -6,12 +6,14 @@
     "outDir": "./dist",
     "paths": {
       "@config/*": ["./src/config/*"],
+      "@constants/*": ["./src/constants/*"],
       "@controllers/*": ["./src/controllers/*"],
       "@middleware/*": ["./src/middleware/*"],
       "@models/*": ["./src/database/models/*"],
       "@services/*": ["./src/services/*"],
       "@routes/*": ["./src/routes/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@utils/*": ["./src/utils/*"],
+      "@validators/*": ["./src/validators/*"]
     },
 
     // Environment Settings

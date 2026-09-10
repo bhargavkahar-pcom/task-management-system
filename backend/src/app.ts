@@ -1,14 +1,13 @@
 import cors from "cors";
 import express, {
   type Application,
-  type ErrorRequestHandler,
-  type NextFunction,
   type Request,
   type Response,
 } from "express";
 import morgan from "morgan";
 
 import config from "@config/config.js";
+import { errorHandler } from "@middleware/error.middleware.js";
 import router from "@routes/index.js";
 
 const app: Application = express();
@@ -40,21 +39,21 @@ app.use((_req: Request, res: Response) => {
 });
 
 // Global error handler
-const errorHandler: ErrorRequestHandler = (
-  err,
-  _req,
-  res,
-  _next: NextFunction,
-) => {
-  console.error(err);
+// const errorHandler: ErrorRequestHandler = (
+//   err,
+//   _req,
+//   res,
+//   _next: NextFunction,
+// ) => {
+//   console.error(err);
 
-  const statusCode = err.statusCode || 500;
+//   const statusCode = err.statusCode || 500;
 
-  res.status(statusCode).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-  });
-};
+//   res.status(statusCode).json({
+//     success: false,
+//     message: err.message || "Internal Server Error",
+//   });
+// };
 
 app.use(errorHandler);
 
