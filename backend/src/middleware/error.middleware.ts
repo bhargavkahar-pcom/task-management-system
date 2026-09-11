@@ -1,10 +1,19 @@
-import type { ErrorRequestHandler, RequestHandler } from "express";
+import type {
+  ErrorRequestHandler,
+  Request,
+  Response,
+  NextFunction,
+  RequestHandler,
+} from "express";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 
 import { ApiError } from "@utils/api-error.js";
 import { sendError } from "@utils/api-response.js";
 import { HTTP_STATUS } from "@constants/http-status.js";
+import logger from "@config/logger.js";
+
+import type { AppError } from "./error.types.js";
 
 export const validateRequest: RequestHandler = (req, res, next) => {
   const errors = validationResult(req);
@@ -37,8 +46,33 @@ export const validateRequest: RequestHandler = (req, res, next) => {
   next();
 };
 
-export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
-  console.error(error);
+export const errorHandler: ErrorRequestHandler = (
+  error: AppError,
+  req: Request,
+  res: Response,
+  _next: NextFunction,
+) => {
+  const statusCode =
+    error.statusCode ?? error.status ?? HTTP_STATUS.INTERNAL_SERVER_ERROR;
+
+  const requestId = req.headers["x-request-id"]?.toString() ?? undefined;
+
+  logger.error("Application Error", {
+    requestId,
+    method: req.method,
+    url: req.originalUrl,
+    statusCode,
+
+    userId: (req as Request & { user?: { id?: string } }).user?.id,
+
+    errorName: error.name,
+    errorMessage: error.message,
+    errorCode: error.code,
+
+    details: error.details,
+
+    stack: error.stack,
+  });
 
   /**
    * Application errors
@@ -75,7 +109,7 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   if (error?.name === "ValidationError") {
     const details: Record<string, string> = {};
 
-    Object.values(error.errors).forEach((validationError: any) => {
+    Object.values(error.errors ?? {}).forEach((validationError: any) => {
       details[validationError.path] = validationError.message;
     });
 
