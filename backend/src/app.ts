@@ -1,16 +1,17 @@
 import cors from "cors";
 import express, {
-  type Application,
+  type Express,
   type Request,
   type Response,
 } from "express";
 import morgan from "morgan";
 
 import config from "@config/config.js";
+import { setupSwagger } from "@config/swagger.js";
 import { errorHandler } from "@middleware/error.middleware.js";
 import router from "@routes/index.js";
 
-const app: Application = express();
+const app: Express = express();
 
 // Middleware
 app.use(cors());
@@ -29,6 +30,8 @@ app.get(`${config.API_PREFIX}/health`, (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+setupSwagger(app);
 
 // Routes
 app.use(config.API_PREFIX, router);
