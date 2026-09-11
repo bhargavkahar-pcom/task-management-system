@@ -27,7 +27,7 @@ const swaggerDocument = {
   paths: {
     "/auth/register": {
       post: {
-        tags: ["Users"],
+        tags: ["Auth"],
         summary: "Register a new user",
 
         requestBody: {
@@ -74,7 +74,7 @@ const swaggerDocument = {
 
     "/auth/login": {
       post: {
-        tags: ["Users"],
+        tags: ["Auth"],
         summary: "Login user",
 
         requestBody: {
@@ -114,7 +114,7 @@ const swaggerDocument = {
 
     "/auth/me": {
       get: {
-        tags: ["Users"],
+        tags: ["Auth"],
         summary: "Get current user profile",
 
         security: [
@@ -127,6 +127,51 @@ const swaggerDocument = {
           "200": {
             description: "User profile retrieved successfully",
           },
+          "401": {
+            description: "Unauthorized",
+          },
+        },
+      },
+    },
+
+    "/auth/logout": {
+      post: {
+        tags: ["Auth"],
+        summary: "Logout current user",
+
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["refreshToken"],
+                properties: {
+                  refreshToken: {
+                    type: "string",
+                    example: "eyJhbGciOiJIUzI1NiIs...",
+                  },
+                },
+              },
+            },
+          },
+        },
+
+        responses: {
+          "200": {
+            description: "Logged out successfully",
+          },
+
+          "400": {
+            description: "Refresh token is required",
+          },
+
           "401": {
             description: "Unauthorized",
           },

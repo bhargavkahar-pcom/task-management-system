@@ -1,17 +1,24 @@
 import { Router } from "express";
 
-import { getMe, login, register } from "@controllers/auth.controller.js";
+import {
+  getUserProfile,
+  loginUser,
+  logoutUser,
+  registerUser,
+} from "@controllers/auth.controller.js";
+import { authenticate } from "@middleware/auth.middleware.js";
 import { validateRequest } from "@middleware/error.middleware.js";
 import {
   loginValidator,
   registerUserValidator,
 } from "@validators/auth.validator.js";
-import { authenticate } from "@middleware/auth.middleware.js";
 
 const router = Router();
 
-router.post("/register", registerUserValidator, validateRequest, register);
-router.post("/login", loginValidator, validateRequest, login);
-router.get("/me", authenticate, getMe);
+router.post("/register", registerUserValidator, validateRequest, registerUser);
+router.post("/login", loginValidator, validateRequest, loginUser);
+router.post("/logout", authenticate, logoutUser);
+
+router.get("/me", authenticate, getUserProfile);
 
 export default router;

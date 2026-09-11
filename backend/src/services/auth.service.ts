@@ -1,7 +1,15 @@
+import crypto from "crypto";
+
 import { HTTP_STATUS } from "@constants/http-status.js";
+import RefreshToken from "@models/refresh-token.model.js";
 import User from "@models/user.model.js";
 import { ApiError } from "@utils/api-error.js";
-import { generateAccessToken, generateRefreshToken } from "@utils/jwt.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "@utils/jwt.js";
+
 import type {
   CurrentUserResponse,
   LoginUserInput,
@@ -10,7 +18,7 @@ import type {
   RegisterUserResponse,
 } from "./auth.types.js";
 
-export const loginUser = async (
+const loginUser = async (
   payload: LoginUserInput,
 ): Promise<LoginUserResponse> => {
   const email = payload.email.trim().toLowerCase();
@@ -40,6 +48,17 @@ export const loginUser = async (
   const accessToken = generateAccessToken(userId);
   const refreshToken = generateRefreshToken(userId);
 
+  const tokenHash = crypto
+    .createHash("sha256")
+    .update(refreshToken)
+    .digest("hex");
+
+  await RefreshToken.create({
+    userId: user._id,
+    tokenHash,
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7d
+  });
+
   return {
     user: {
       id: userId,
@@ -53,7 +72,7 @@ export const loginUser = async (
   };
 };
 
-export const registerUser = async (
+const registerUser = async (
   payload: RegisterUserInput,
 ): Promise<RegisterUserResponse> => {
   const name = payload.name.trim();
@@ -83,9 +102,7 @@ export const registerUser = async (
   };
 };
 
-export const getCurrentUser = async (
-  userId: string,
-): Promise<CurrentUserResponse> => {
+const getCurrentUser = async (userId: string): Promise<CurrentUserResponse> => {
   const user = await User.findById(userId).select("-password");
 
   if (!user) {
@@ -104,3 +121,33 @@ export const getCurrentUser = async (
     updatedAt: user.updatedAt,
   };
 };
+
+const logoutUser = async (
+  refreshToken: string,
+  userId: string,
+): Promise<void> => {
+  const payload = verifyRefreshToken(refreshToken);
+
+  if (payload.sub !== userId) {
+    throw new Error("Invalid refresh token");
+  }
+
+  const tokenHash = crypto
+    .createHash("sha256")
+    .update(refreshToken)
+    .digest("hex");
+
+  await RefreshToken.findOneAndUpdate(
+    {
+      tokenHash,
+      revokedAt: null,
+    },
+    {
+      $set: {
+        revokedAt: new Date(),
+      },
+    },
+  );
+};
+
+export default { getCurrentUser, loginUser, logoutUser, registerUser };

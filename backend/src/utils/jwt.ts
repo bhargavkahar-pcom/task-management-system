@@ -51,8 +51,13 @@ export const generateRefreshToken = (userId: string): string => {
 };
 
 export const verifyAccessToken = (token: string): AccessTokenPayload => {
-  const decoded = jwt.verify(token, JWT_ACCESS_SECRET) as JwtPayload &
-    AccessTokenPayload;
+  let decoded;
+  try {
+    decoded = jwt.verify(token, JWT_ACCESS_SECRET) as JwtPayload &
+      AccessTokenPayload;
+  } catch (error) {
+    throw error;
+  }
 
   if (decoded.type !== "access" || typeof decoded.sub !== "string") {
     throw new Error("Invalid access token");
@@ -65,8 +70,13 @@ export const verifyAccessToken = (token: string): AccessTokenPayload => {
 };
 
 export const verifyRefreshToken = (token: string): RefreshTokenPayload => {
-  const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as JwtPayload &
-    RefreshTokenPayload;
+  let decoded;
+  try {
+    decoded = jwt.verify(token, JWT_REFRESH_SECRET) as JwtPayload &
+      RefreshTokenPayload;
+  } catch (error) {
+    throw error;
+  }
 
   if (decoded.type !== "refresh" || typeof decoded.sub !== "string") {
     throw new Error("Invalid refresh token");

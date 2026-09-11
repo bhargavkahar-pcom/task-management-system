@@ -1,14 +1,10 @@
 import type { NextFunction, Request, Response } from "express";
 
-import {
-  getCurrentUser,
-  loginUser,
-  registerUser,
-} from "@services/auth.service.js";
-import { sendSuccess } from "@utils/api-response.js";
 import { HTTP_STATUS } from "@constants/http-status.js";
+import authService from "@services/auth.service.js";
+import { sendError, sendSuccess } from "@utils/api-response.js";
 
-export const login = async (
+export const loginUser = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -16,7 +12,7 @@ export const login = async (
   try {
     const { email, password } = req.body;
 
-    const result = await loginUser({
+    const result = await authService.loginUser({
       email,
       password,
     });
@@ -31,7 +27,7 @@ export const login = async (
   }
 };
 
-export const register = async (
+export const registerUser = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -39,7 +35,7 @@ export const register = async (
   try {
     const { name, email, password } = req.body;
 
-    const user = await registerUser({
+    const user = await authService.registerUser({
       name,
       email,
       password,
@@ -55,7 +51,7 @@ export const register = async (
   }
 };
 
-export const getMe = async (
+export const getUserProfile = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -65,12 +61,41 @@ export const getMe = async (
       throw new Error("Authenticated user not found in request");
     }
 
-    const user = await getCurrentUser(req.user.id);
+    const user = await authService.getCurrentUser(req.user.id);
 
     sendSuccess(res, {
       statusCode: HTTP_STATUS.OK,
       message: "User profile retrieved successfully",
       data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logoutUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      sendError(res, {
+        statusCode: HTTP_STATUS.BAD_REQUEST,
+        message: "Invalid request",
+        code: "INVALID_REQUEST",
+      });
+
+      return;
+    }
+
+    await authService.logoutUser(refreshToken, req.user!.id);
+
+    sendSuccess(res, {
+      statusCode: HTTP_STATUS.OK,
+      message: "Logged out successfully",
     });
   } catch (error) {
     next(error);
