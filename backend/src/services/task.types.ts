@@ -1,4 +1,5 @@
 import type { ITask, TaskPriority, TaskStatus } from "@models/task.model.js";
+import type { SortOrder } from "../types/common.types.js";
 
 export interface CreateTaskRequest {
   title: string;
@@ -8,6 +9,17 @@ export interface CreateTaskRequest {
   dueDate: string;
 }
 
+export const TASK_SORT_BY = [
+  "title",
+  "status",
+  "priority",
+  "dueDate",
+  "createdAt",
+  "updatedAt",
+] as const;
+
+export type TaskSortBy = (typeof TASK_SORT_BY)[number];
+
 export interface GetTasksParams {
   userId: string;
   page: number;
@@ -15,6 +27,6 @@ export interface GetTasksParams {
   search?: string;
   status?: ITask["status"];
   priority?: ITask["priority"];
-  sortBy?: "dueDate" | "createdAt" | "updatedAt";
-  sortOrder?: "asc" | "desc";
+  sortBy?: TaskSortBy;
+  sortOrder?: SortOrder;
 }

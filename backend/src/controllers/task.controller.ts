@@ -3,7 +3,8 @@ import type { NextFunction, Request, Response } from "express";
 import { HTTP_STATUS } from "@constants/http-status.js";
 import type { TaskPriority, TaskStatus } from "@models/task.model.js";
 import taskService from "@services/task.service.js";
-import { sendSuccess } from "@utils/api-response.js";
+import type { TaskSortBy } from "@services/task.types.js";
+import { sendError, sendSuccess } from "@utils/api-response.js";
 
 export const createTask = async (
   req: Request,
@@ -11,6 +12,11 @@ export const createTask = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
+    req.body.dueDate =
+      req.body.dueDate && !Number.isNaN(Date.parse(req.body.dueDate))
+        ? req.body.dueDate
+        : undefined;
+
     const task = await taskService.createTask({
       ...req.body,
       userId: req.user?.id,
@@ -33,7 +39,13 @@ export const getAllTasks = async (
 ): Promise<void> => {
   try {
     if (!req.user) {
-      throw new Error("Unauthorised for this request.");
+      sendError(res, {
+        statusCode: HTTP_STATUS.UNAUTHORIZED,
+        message: "Unauthorised for this request.",
+        code: "UNAUTHORIZED",
+      });
+
+      return;
     }
 
     const page = Number(req.query.page) || 1;
@@ -65,7 +77,7 @@ export const getAllTasks = async (
         priority: priority as TaskPriority,
       }),
       ...(sortBy !== undefined && {
-        sortBy: sortBy as "dueDate" | "createdAt" | "updatedAt",
+        sortBy: sortBy as TaskSortBy,
       }),
       sortOrder,
     });

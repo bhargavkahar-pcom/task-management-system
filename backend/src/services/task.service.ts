@@ -20,7 +20,7 @@ const createTask = async ({
     ...(description !== undefined && { description }),
     ...(status !== undefined && { status }),
     ...(priority !== undefined && { priority }),
-    dueDate: new Date(dueDate),
+    ...(dueDate !== undefined && { dueDate: new Date(dueDate) }),
     userId,
   });
 

@@ -12,7 +12,7 @@ export interface ITask {
   description?: string;
   status: TaskStatus;
   priority: TaskPriority;
-  dueDate: Date;
+  dueDate?: Date;
   userId: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -51,7 +51,6 @@ const taskSchema = new Schema<ITask>(
     },
     dueDate: {
       type: Date,
-      required: [true, "Due date is required"],
     },
     userId: {
       type: Schema.Types.ObjectId,

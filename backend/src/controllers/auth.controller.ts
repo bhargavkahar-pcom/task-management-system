@@ -58,7 +58,13 @@ export const getUserProfile = async (
 ): Promise<void> => {
   try {
     if (!req.user) {
-      throw new Error("Unauthorised for this request.");
+      sendError(res, {
+        statusCode: HTTP_STATUS.UNAUTHORIZED,
+        message: "Unauthorised for this request.",
+        code: "UNAUTHORIZED",
+      });
+
+      return;
     }
 
     const user = await authService.getCurrentUser(req.user.id);
