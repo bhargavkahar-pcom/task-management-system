@@ -58,7 +58,7 @@ export const getUserProfile = async (
 ): Promise<void> => {
   try {
     if (!req.user) {
-      throw new Error("Authenticated user not found in request");
+      throw new Error("Unauthorised for this request.");
     }
 
     const user = await authService.getCurrentUser(req.user.id);

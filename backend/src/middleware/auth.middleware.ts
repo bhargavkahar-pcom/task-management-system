@@ -1,14 +1,15 @@
 import type { NextFunction, Request, Response } from "express";
 
 import { HTTP_STATUS } from "@constants/http-status.js";
+import RefreshToken from "@models/refresh-token.model.js";
 import { sendError } from "@utils/api-response.js";
 import { verifyAccessToken } from "@utils/jwt.js";
 
-export const authenticate = (
+export const authenticate = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): void => {
+): Promise<void> => {
   const authorization = req.headers.authorization;
 
   /**
@@ -38,6 +39,15 @@ export const authenticate = (
 
   try {
     const payload = verifyAccessToken(token);
+
+    const hasRefreshToken = await RefreshToken.findOne({
+      userId: payload.sub,
+      revokedAt: null,
+    });
+
+    if (!hasRefreshToken) {
+      throw new Error();
+    }
 
     req.user = {
       id: payload.sub,
