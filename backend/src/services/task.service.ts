@@ -1,10 +1,12 @@
-import type { QueryFilter } from "mongoose";
+import { Types, type QueryFilter } from "mongoose";
 
+import { HTTP_STATUS } from "@constants/http-status.js";
 import Task, { type ITask } from "@models/task.model.js";
+import { ApiError } from "@utils/api-error.js";
 import type { CreateTaskRequest, GetTasksParams } from "./task.types.js";
 
 interface CreateTaskServiceInput extends CreateTaskRequest {
-  userId: NonNullable<Express.Request["user"]>["id"];
+  createdBy: NonNullable<Express.Request["user"]>["id"];
 }
 
 const createTask = async ({
@@ -13,7 +15,7 @@ const createTask = async ({
   status,
   priority,
   dueDate,
-  userId,
+  createdBy,
 }: CreateTaskServiceInput) => {
   const task = await Task.create({
     title,
@@ -21,14 +23,14 @@ const createTask = async ({
     ...(status !== undefined && { status }),
     ...(priority !== undefined && { priority }),
     ...(dueDate !== undefined && { dueDate: new Date(dueDate) }),
-    userId,
+    createdBy,
   });
 
   return task;
 };
 
 const getAllTasks = async ({
-  userId,
+  createdBy,
   page,
   limit,
   search,
@@ -38,7 +40,7 @@ const getAllTasks = async ({
   sortOrder = "desc",
 }: GetTasksParams) => {
   const filter: QueryFilter<ITask> = {
-    userId,
+    createdBy,
   };
 
   if (search) {
@@ -81,4 +83,82 @@ const getAllTasks = async ({
   };
 };
 
-export default { createTask, getAllTasks };
+const getTaskById = async (taskId: string) => {
+  if (!Types.ObjectId.isValid(taskId)) {
+    throw new ApiError(
+      HTTP_STATUS.BAD_REQUEST,
+      "INVALID_TASK_ID",
+      "Invalid task ID",
+    );
+  }
+
+  const task = await Task.findById(taskId).lean();
+
+  if (!task) {
+    throw new ApiError(
+      HTTP_STATUS.NOT_FOUND,
+      "TASK_NOT_FOUND",
+      "Task not found",
+    );
+  }
+
+  return task;
+};
+
+const updateTask = async (
+  taskId: string,
+  data: {
+    title?: string;
+    description?: string;
+    status?: string;
+    priority?: string;
+  },
+) => {
+  if (!Types.ObjectId.isValid(taskId)) {
+    throw new ApiError(
+      HTTP_STATUS.BAD_REQUEST,
+      "INVALID_TASK_ID",
+      "Invalid task ID",
+    );
+  }
+
+  const task = await Task.findById(taskId);
+
+  if (!task) {
+    throw new ApiError(
+      HTTP_STATUS.NOT_FOUND,
+      "TASK_NOT_FOUND",
+      "Task not found",
+    );
+  }
+
+  Object.assign(task, data);
+
+  await task.save();
+
+  return task.toObject();
+};
+
+const deleteTask = async (taskId: string): Promise<void> => {
+  if (!Types.ObjectId.isValid(taskId)) {
+    throw new ApiError(
+      HTTP_STATUS.BAD_REQUEST,
+      "INVALID_TASK_ID",
+      "Invalid task ID",
+    );
+  }
+
+  const task = await Task.findById(taskId);
+
+  if (!task) {
+    throw new ApiError(
+      HTTP_STATUS.NOT_FOUND,
+      "TASK_NOT_FOUND",
+      "Task not found",
+    );
+  }
+
+  await Task.findByIdAndDelete(taskId);
+};
+
+export default { createTask, getAllTasks, getTaskById, updateTask, deleteTask };

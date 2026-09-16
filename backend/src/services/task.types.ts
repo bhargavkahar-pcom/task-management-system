@@ -21,7 +21,7 @@ export const TASK_SORT_BY = [
 export type TaskSortBy = (typeof TASK_SORT_BY)[number];
 
 export interface GetTasksParams {
-  userId: string;
+  createdBy: string;
   page: number;
   limit: number;
   search?: string;

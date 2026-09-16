@@ -19,7 +19,7 @@ export const createTask = async (
 
     const task = await taskService.createTask({
       ...req.body,
-      userId: req.user?.id,
+      createdBy: req.user?.id,
     });
 
     sendSuccess(res, {
@@ -66,7 +66,7 @@ export const getAllTasks = async (
     const sortOrder = req.query.sortOrder === "asc" ? "asc" : "desc";
 
     const result = await taskService.getAllTasks({
-      userId: req.user.id,
+      createdBy: req.user.id,
       page,
       limit,
       ...(search !== undefined && { search }),
@@ -86,6 +86,61 @@ export const getAllTasks = async (
       statusCode: HTTP_STATUS.OK,
       message: "Tasks retrieved successfully",
       data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTaskById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const task = await taskService.getTaskById(String(id));
+
+    sendSuccess(res, {
+      statusCode: HTTP_STATUS.OK,
+      message: "Tasks fetched successfully",
+      data: task,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateTask = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const task = await taskService.updateTask(String(req.params.id), req.body);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: "Task updated successfully",
+      data: task,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteTask = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    await taskService.deleteTask(String(req.params.id));
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: "Task deleted successfully",
     });
   } catch (error) {
     next(error);
