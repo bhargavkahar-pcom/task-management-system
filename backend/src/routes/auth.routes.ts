@@ -4,6 +4,7 @@ import {
   getUserProfile,
   loginUser,
   logoutUser,
+  getRefreshToken,
   registerUser,
 } from "@controllers/auth.controller.js";
 import { authenticate } from "@middleware/auth.middleware.js";
@@ -20,5 +21,6 @@ router.post("/login", loginValidator, validateRequest, loginUser);
 router.post("/logout", authenticate, logoutUser);
 
 router.get("/me", authenticate, getUserProfile);
+router.get("/refresh", getRefreshToken);
 
 export default router;
