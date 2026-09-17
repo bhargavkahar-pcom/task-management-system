@@ -21,6 +21,6 @@ router.post("/login", loginValidator, validateRequest, loginUser);
 router.post("/logout", authenticate, logoutUser);
 
 router.get("/me", authenticate, getUserProfile);
-router.get("/refresh", getRefreshToken);
+router.get("/refresh-token", getRefreshToken);
 
 export default router;

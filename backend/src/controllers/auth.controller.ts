@@ -92,19 +92,19 @@ export const logoutUser = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.headers["x-refresh-token"];
 
-    if (!refreshToken) {
+    if (!req.user || !refreshToken || typeof refreshToken !== "string") {
       sendError(res, {
-        statusCode: HTTP_STATUS.BAD_REQUEST,
-        message: "Invalid request",
-        code: "INVALID_REQUEST",
+        statusCode: HTTP_STATUS.UNAUTHORIZED,
+        message: "Unauthorised for this request.",
+        code: "UNAUTHORIZED",
       });
 
       return;
     }
 
-    await authService.logoutUser(refreshToken, req.user!.id);
+    await authService.logoutUser(refreshToken, req.user.id);
 
     sendSuccess(res, {
       statusCode: HTTP_STATUS.OK,
@@ -121,7 +121,7 @@ export const getRefreshToken = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { refreshtoken: token } = req.headers;
+    const token = req.headers["x-refresh-token"];
 
     if (!token || typeof token !== "string") {
       sendError(res, {
@@ -133,7 +133,7 @@ export const getRefreshToken = async (
       return;
     }
 
-    let { sub } = verifyRefreshToken(token);
+    const { sub } = verifyRefreshToken(token);
 
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 

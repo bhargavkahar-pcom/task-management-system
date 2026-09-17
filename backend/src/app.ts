@@ -1,9 +1,5 @@
 import cors from "cors";
-import express, {
-  type Express,
-  type Request,
-  type Response,
-} from "express";
+import express, { type Express, type Request, type Response } from "express";
 import morgan from "morgan";
 
 import config from "@config/config.js";

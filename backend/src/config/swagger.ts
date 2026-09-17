@@ -1,6 +1,9 @@
 import type { Express } from "express";
 import swaggerUi from "swagger-ui-express";
 
+import { authSwagger } from "./docs/auth.swagger.js";
+import { taskSwagger } from "./docs/task.swagger.js";
+
 const swaggerDocument = {
   openapi: "3.0.0",
 
@@ -22,162 +25,16 @@ const swaggerDocument = {
       name: "Auth",
       description: "User authentication and profile APIs",
     },
+
+    {
+      name: "Task",
+      description: "Task management APIs",
+    },
   ],
 
   paths: {
-    "/auth/register": {
-      post: {
-        tags: ["Auth"],
-        summary: "Register a new user",
-
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                required: ["name", "email", "password"],
-                properties: {
-                  name: {
-                    type: "string",
-                    example: "John Doe",
-                  },
-                  email: {
-                    type: "string",
-                    format: "email",
-                    example: "john@example.com",
-                  },
-                  password: {
-                    type: "string",
-                    format: "password",
-                    example: "Password@123",
-                  },
-                },
-              },
-            },
-          },
-        },
-
-        responses: {
-          "201": {
-            description: "User registered successfully",
-          },
-          "400": {
-            description: "Validation error",
-          },
-          "409": {
-            description: "Email already exists",
-          },
-        },
-      },
-    },
-
-    "/auth/login": {
-      post: {
-        tags: ["Auth"],
-        summary: "Login user",
-
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                required: ["email", "password"],
-                properties: {
-                  email: {
-                    type: "string",
-                    format: "email",
-                    example: "john@example.com",
-                  },
-                  password: {
-                    type: "string",
-                    format: "password",
-                    example: "Password@123",
-                  },
-                },
-              },
-            },
-          },
-        },
-
-        responses: {
-          "200": {
-            description: "Login successful",
-          },
-          "401": {
-            description: "Invalid email or password",
-          },
-        },
-      },
-    },
-
-    "/auth/me": {
-      get: {
-        tags: ["Auth"],
-        summary: "Get current user profile",
-
-        security: [
-          {
-            bearerAuth: [],
-          },
-        ],
-
-        responses: {
-          "200": {
-            description: "User profile retrieved successfully",
-          },
-          "401": {
-            description: "Unauthorized",
-          },
-        },
-      },
-    },
-
-    "/auth/logout": {
-      post: {
-        tags: ["Auth"],
-        summary: "Logout current user",
-
-        security: [
-          {
-            bearerAuth: [],
-          },
-        ],
-
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                required: ["refreshToken"],
-                properties: {
-                  refreshToken: {
-                    type: "string",
-                    example: "eyJhbGciOiJIUzI1NiIs...",
-                  },
-                },
-              },
-            },
-          },
-        },
-
-        responses: {
-          "200": {
-            description: "Logged out successfully",
-          },
-
-          "400": {
-            description: "Refresh token is required",
-          },
-
-          "401": {
-            description: "Unauthorized",
-          },
-        },
-      },
-    },
+    ...authSwagger.paths,
+    ...taskSwagger.paths,
   },
 
   components: {
@@ -187,6 +44,35 @@ const swaggerDocument = {
         scheme: "bearer",
         bearerFormat: "JWT",
       },
+    },
+
+    // Global Reusable Responses
+    responses: {
+      UnauthorizedError: {
+        description: "Unauthorized access - missing or invalid token",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                success: { type: "boolean", example: false },
+                message: { type: "string", example: "Unauthorized" },
+                error: {
+                  type: "object",
+                  properties: {
+                    code: { type: "string", example: "UNAUTHORIZED" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+
+    schemas: {
+      ...authSwagger.components.schemas,
+      ...taskSwagger.components.schemas,
     },
   },
 };
