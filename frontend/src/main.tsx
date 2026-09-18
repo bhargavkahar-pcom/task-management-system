@@ -1,10 +1,16 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { ThemeProvider } from "@emotion/react";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-createRoot(document.getElementById('root')!).render(
+import "./index.css";
+
+import App from "./App.tsx";
+import { theme } from "./theme/theme.ts";
+
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
   </StrictMode>,
-)
+);
