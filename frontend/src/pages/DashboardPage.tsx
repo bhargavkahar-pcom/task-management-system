@@ -1,16 +1,15 @@
 import {
-    AppBar,
-    Box,
-    Button,
-    Container,
-    Toolbar,
-    Typography,
+  AppBar,
+  Box,
+  Button,
+  Container,
+  Toolbar,
+  Typography,
 } from "@mui/material";
-
 import { useNavigate } from "@tanstack/react-router";
 
-import { authApi } from "../api/auth.api";
-import { authStorage } from "../features/auth.storage";
+import { authApi } from "@/api/auth.api";
+import { authStorage } from "@/features/auth.storage";
 
 export function DashboardPage() {
   const navigate = useNavigate();

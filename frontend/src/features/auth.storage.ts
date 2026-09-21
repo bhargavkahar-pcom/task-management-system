@@ -1,8 +1,8 @@
 import type { AuthTokens, User } from "./auth/types/auth.types";
 
-const ACCESS_TOKEN_KEY = "task_management_access_token";
-const REFRESH_TOKEN_KEY = "task_management_refresh_token";
-const USER_KEY = "task_management_user";
+const ACCESS_TOKEN_KEY = "tms_at";
+const REFRESH_TOKEN_KEY = "tms_rt";
+const USER_KEY = "tms_user";
 
 export const authStorage = {
   getAccessToken(): string | null {

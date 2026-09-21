@@ -24,8 +24,7 @@ export interface AuthTokens {
 
 export interface AuthResponse {
   user: User;
-  accessToken: string;
-  refreshToken: string;
+  tokens: AuthTokens;
 }
 
 export interface RefreshResponse {

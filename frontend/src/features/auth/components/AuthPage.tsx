@@ -1,10 +1,8 @@
+import { Box, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 
-import { Box, Tab, Tabs } from "@mui/material";
-
-import { AppLogo } from "../../../components/common/AppLogo";
-import { AuthLayout } from "../../../layouts/AuthLayout";
-
+import { AppLogo } from "@/components/common/AppLogo";
+import { AuthLayout } from "@/layouts/AuthLayout";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
 
@@ -33,7 +31,7 @@ export function AuthPage({ onAuthenticated }: AuthPageProps) {
         {tab === 0 ? (
           <LoginForm onSuccess={onAuthenticated} />
         ) : (
-          <RegisterForm onSuccess={onAuthenticated} />
+          <RegisterForm onSuccess={() => setTab(0)} />
         )}
       </Box>
     </AuthLayout>

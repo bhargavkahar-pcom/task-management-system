@@ -3,17 +3,28 @@ import {
   createRoute,
   createRouter,
   Outlet,
+  redirect,
 } from "@tanstack/react-router";
 
-import { AuthPage } from "../features/auth/components/AuthPage";
-import { DashboardPage } from "../pages/DashboardPage";
-
+import { AuthPage } from "@/features/auth/components/AuthPage";
+import { DashboardPage } from "@/pages/DashboardPage";
+import { NotFoundPage } from "@/pages/NotFoundPage";
 import { requireAuth, requireGuest } from "./route-guards";
-import { NotFoundPage } from "../pages/NotFoundPage";
 
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
   notFoundComponent: NotFoundPage,
+});
+
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  beforeLoad: () => {
+    throw redirect({
+      to: "/auth",
+      replace: true,
+    });
+  },
 });
 
 const authRoute = createRoute({
@@ -36,7 +47,11 @@ const dashboardRoute = createRoute({
   component: DashboardPage,
 });
 
-const routeTree = rootRoute.addChildren([authRoute, dashboardRoute]);
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  authRoute,
+  dashboardRoute,
+]);
 
 export const router = createRouter({
   routeTree,

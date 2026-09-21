@@ -5,7 +5,7 @@ export const loginSchema = z.object({
     .string()
     .trim()
     .min(1, "Email is required.")
-    .email("Please enter a valid email address."),
+    .pipe(z.email({ message: "Please enter a valid email address." })),
 
   password: z.string().min(1, "Password is required."),
 });
@@ -22,12 +22,19 @@ export const registerSchema = z
       .string()
       .trim()
       .min(1, "Email is required.")
-      .email("Please enter a valid email address."),
+      .pipe(z.email({ message: "Please enter a valid email address." })),
 
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters.")
-      .max(128, "Password cannot exceed 128 characters."),
+      .min(8, {
+        message: "Password must be between 8 and 128 characters.",
+      })
+      .max(128, {
+        message: "Password must be between 8 and 128 characters.",
+      })
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])/, {
+        message: "Password must contain uppercase, lowercase, and a number.",
+      }),
 
     confirmPassword: z.string().min(1, "Please confirm your password."),
   })

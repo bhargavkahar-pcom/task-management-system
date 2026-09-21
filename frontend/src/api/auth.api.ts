@@ -1,13 +1,12 @@
-import { apiClient } from "./axios";
-
-import { authStorage } from "../features/auth.storage";
+import { authStorage } from "@/features/auth.storage";
 import type {
-    AuthResponse,
-    LoginRequest,
-    RefreshResponse,
-    RegisterRequest,
-    User,
-} from "../features/auth/types/auth.types";
+  AuthResponse,
+  LoginRequest,
+  RefreshResponse,
+  RegisterRequest,
+  User,
+} from "@/features/auth/types/auth.types";
+import { apiClient } from "./axios";
 
 export const authApi = {
   async login(payload: LoginRequest): Promise<AuthResponse> {
@@ -20,11 +19,11 @@ export const authApi = {
     return response.data.data;
   },
 
-  async register(payload: RegisterRequest): Promise<AuthResponse> {
+  async register(payload: RegisterRequest): Promise<User> {
     const response = await apiClient.post<{
       success: boolean;
       message: string;
-      data: AuthResponse;
+      data: User;
     }>("/auth/register", payload);
 
     return response.data.data;
@@ -55,8 +54,14 @@ export const authApi = {
   async logout(): Promise<void> {
     const refreshToken = authStorage.getRefreshToken();
 
-    await apiClient.post("/auth/logout", {
-      refreshToken,
-    });
+    await apiClient.post(
+      "/auth/logout",
+      {},
+      {
+        headers: {
+          "x-refresh-token": refreshToken,
+        },
+      },
+    );
   },
 };

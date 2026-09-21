@@ -1,16 +1,12 @@
+import { Alert, Button, Stack, TextField } from "@mui/material";
+import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 
-import { Alert, Button, Stack, TextField } from "@mui/material";
-
-import { useForm } from "@tanstack/react-form";
-
+import { authApi } from "@/api/auth.api";
 import {
   registerSchema,
   type RegisterFormValues,
 } from "../schemas/auth.schema";
-
-import { authApi } from "../../../api/auth.api";
-import { authStorage } from "../../auth.storage";
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -39,19 +35,11 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       try {
         const { name, email, password } = validationResult.data;
 
-        const response = await authApi.register({
+        await authApi.register({
           name,
           email,
           password,
         });
-
-        authStorage.setAuth(
-          {
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken,
-          },
-          response.user,
-        );
 
         onSuccess();
       } catch (error: unknown) {

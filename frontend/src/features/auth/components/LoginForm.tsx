@@ -1,13 +1,10 @@
+import { Alert, Button, Stack, TextField } from "@mui/material";
+import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 
-import { Alert, Button, Stack, TextField } from "@mui/material";
-
-import { useForm } from "@tanstack/react-form";
-
+import { authApi } from "@/api/auth.api";
+import { authStorage } from "@/features/auth.storage";
 import { loginSchema, type LoginFormValues } from "../schemas/auth.schema";
-
-import { authApi } from "../../../api/auth.api";
-import { authStorage } from "../../auth.storage";
 
 interface LoginFormProps {
   onSuccess: () => void;
@@ -32,14 +29,14 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       }
 
       try {
-        const response = await authApi.login(validationResult.data);
+        const { user, tokens } = await authApi.login(validationResult.data);
 
         authStorage.setAuth(
           {
-            accessToken: response.accessToken,
-            refreshToken: response.refreshToken,
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
           },
-          response.user,
+          user,
         );
 
         onSuccess();
@@ -98,9 +95,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
               helperText={
                 field.state.meta.isTouched
                   ? loginSchema.shape.email.safeParse(field.state.value).success
-                    ? "": "xx"
-                    // : loginSchema?.shape?.email?.safeParse(field.state.value).error
-                    //     .issues[0]?.message
+                    ? ""
+                    : loginSchema?.shape?.email?.safeParse(field.state.value)
+                        .error?.issues[0]?.message
                   : ""
               }
               autoComplete="email"
