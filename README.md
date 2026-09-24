@@ -1,61 +1,71 @@
 # Task Management System
 
-A full-stack Task Management System built with a modern TypeScript-based architecture.
+A full-stack Task Management System built with a TypeScript-based backend and two frontend implementations: React.js and Next.js.
 
-The project is organized as a single repository containing separate backend and frontend applications.
+The repository is organized as a single monorepo-style project with three independent applications:
+
+- `backend` — Backend REST APIs
+- `frontend-reactjs` — React.js frontend application
+- `frontend-nextjs` — Next.js frontend application
+
+All applications communicate with the same backend API and MongoDB database.
+
+---
 
 ## Project Overview
 
-The Task Management System provides a scalable foundation for managing users, authentication, and tasks through a RESTful API and a React-based web application.
+The Task Management System provides a scalable foundation for:
 
-### Key Goals
-
-- Secure user authentication and authorization
-- Task creation and management
-- RESTful backend APIs
-- MongoDB-based data persistence
-- Input validation and consistent API responses
+- User registration and authentication
+- JWT access and refresh token authentication
+- Protected APIs and routes
+- Task creation, retrieval, update, and deletion
+- Task filtering, searching, sorting, and pagination
+- Dashboard statistics
+- Input validation
 - Centralized error handling
-- Modular and scalable backend architecture
-- Type-safe frontend and backend development
-- Separation of frontend and backend responsibilities
-- Production-ready project structure
+- MongoDB data persistence using Mongoose
+- Type-safe backend and frontend development
+- React.js and Next.js frontend implementations
 
-## Project Structure
+---
+
+## Repository Structure
 
 ```text
-task-management/
+task-management-system/
 │
-├── backend/
+├── backend/                         # Backend APIs
 │   ├── src/
-│   │   ├── config/
-│   │   ├── controllers/
-│   │   ├── middleware/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── validators/
-│   │   ├── utils/
-│   │   ├── app.ts
-│   │   └── server.ts
+│   │   ├── config/                 # Application configuration and environment handling
+│   │   ├── controllers/            # HTTP request/response handling
+│   │   ├── database/               # MongoDB connection
+│   │   ├── middleware/             # Auth, error handling, logging, etc.
+│   │   ├── models/                 # Mongoose models/schemas
+│   │   ├── routes/                 # API route definitions
+│   │   ├── services/               # Business logic
+│   │   ├── validators/             # Express validation rules
+│   │   ├── utils/                  # Reusable utilities
+│   │   ├── app.ts                  # Express application setup
+│   │   └── server.ts               # Server/bootstrap entry point
 │   │
-│   ├── tests/
-│   ├── .env
-│   ├── .env.example
+│   ├── tests/                      # Backend tests
+│   ├── .env                        # Local environment variables
+│   ├── .env.example                # Environment variable template
 │   ├── package.json
 │   └── tsconfig.json
 │
-├── frontend/
+├── frontend-reactjs/               # React.js frontend
 │   ├── src/
-│   │   ├── components/
-│   │   ├── features/
-│   │   ├── pages/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── store/
-│   │   ├── types/
-│   │   ├── App.tsx
-│   │   └── main.tsx
+│   │   ├── components/             # Reusable UI components
+│   │   ├── features/               # Feature-specific frontend modules
+│   │   ├── pages/                  # Application pages
+│   │   ├── routes/                 # React Router configuration
+│   │   ├── services/               # API/service layer
+│   │   ├── store/                  # Redux Toolkit store/state
+│   │   ├── types/                  # TypeScript types
+│   │   ├── App.tsx                 # Root React component
+│   │   └── main.tsx                # React application entry point
 │   │
 │   ├── public/
 │   ├── .env
@@ -63,55 +73,90 @@ task-management/
 │   ├── package.json
 │   └── tsconfig.json
 │
+├── frontend-nextjs/                # Next.js frontend
+│   ├── public/
+│   ├── src/
+│   │   ├── app/                    # Next.js 16 App Router
+│   │   │   ├── (authenticated)/    # Protected route group
+│   │   │   │   ├── dashboard/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── tasks/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── layout.tsx
+│   │   │   ├── auth/
+│   │   │   │   └── page.tsx
+│   │   │   ├── globals.css
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx             # Redirects / to /auth
+│   │   │
+│   │   ├── components/
+│   │   │   ├── auth/
+│   │   │   │   ├── AuthGuard.tsx
+│   │   │   │   ├── AuthTabs.tsx
+│   │   │   │   ├── GuestGuard.tsx
+│   │   │   │   ├── LoginForm.tsx
+│   │   │   │   └── RegisterForm.tsx
+│   │   │   └── layout/
+│   │   │       ├── AppHeader.tsx
+│   │   │       └── ThemeModeSelector.tsx
+│   │   │
+│   │   ├── config/
+│   │   │   └── env.ts
+│   │   ├── hooks/                  # Reusable React hooks
+│   │   ├── lib/
+│   │   │   ├── axios.ts
+│   │   │   └── queryClient.ts
+│   │   ├── providers/
+│   │   │   ├── AppProviders.tsx
+│   │   │   ├── MuiProvider.tsx
+│   │   │   ├── NotificationProvider.tsx
+│   │   │   └── QueryProvider.tsx
+│   │   ├── schemas/
+│   │   │   └── auth.schema.ts      # Zod validation schemas
+│   │   ├── services/
+│   │   │   └── auth.service.ts
+│   │   ├── types/
+│   │   │   └── auth.types.ts
+│   │   └── utils/
+│   │       ├── api-error.ts
+│   │       ├── notification.ts
+│   │       └── token.ts
+│   │
+│   ├── .env.local
+│   ├── .gitignore
+│   ├── eslint.config.mjs
+│   ├── next.config.ts
+│   ├── package.json
+│   └── tsconfig.json
+│
 ├── .gitignore
 └── README.md
 ```
 
+> The three applications are intentionally kept separate so that the same backend can be consumed by either frontend implementation.
+
+---
+
 ## Architecture
 
-The application follows a layered architecture with clear separation of responsibilities.
-
 ```text
-                    ┌─────────────────────────┐
-                    │       React Client      │
-                    │                         │
-                    │ React + TypeScript      │
-                    │ Redux Toolkit           │
-                    │ React Router            │
-                    │ Axios                   │
-                    └────────────┬────────────┘
-                                 │
-                                 │ HTTP / REST API
-                                 ▼
-                    ┌─────────────────────────┐
-                    │      Express Server     │
-                    │                         │
-                    │ Routes                  │
-                    │ Controllers             │
-                    │ Middleware              │
-                    │ Validators              │
-                    │ Services                │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │       Mongoose ORM      │
-                    │                         │
-                    │ Models                  │
-                    │ Schemas                 │
-                    │ Validation              │
-                    │ Indexes                 │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │        MongoDB          │
-                    └─────────────────────────┘
+                         Task Management System
+                                  │
+             ┌────────────────────┼────────────────────┐
+             │                    │                    │
+             ▼                    ▼                    ▼
+      React.js Client       Next.js Client        Backend APIs
+   frontend-reactjs       frontend-nextjs          backend
+             │                    │                    │
+             └──────────────┬─────┘                    │
+                            │                          │
+                            └────── HTTP / REST ───────┘
+                                                       │
+                                                       ▼
+                                                  MongoDB
 ```
 
-### Backend Architecture
-
-The backend follows a modular layered architecture:
+### Backend Request Flow
 
 ```text
 Request
@@ -132,57 +177,28 @@ Controller
 Service
    │
    ▼
-Model
+Mongoose Model
    │
    ▼
 MongoDB
 ```
 
-#### Routes
+### Backend Responsibilities
 
-Responsible for defining API endpoints and connecting them to controllers.
+- **Routes** — Define API endpoints.
+- **Middleware** — Authentication, authorization, logging, error handling, and request processing.
+- **Validators** — Validate incoming request parameters, body, and query data.
+- **Controllers** — Handle HTTP requests and responses while keeping business logic out of controllers.
+- **Services** — Contain application and business logic.
+- **Models** — Define MongoDB schemas, validation, relationships, and indexes.
+- **Config** — Centralize environment-based configuration.
+- **Utils** — Reusable helper functions.
 
-#### Middleware
-
-Handles cross-cutting concerns such as:
-
-- Authentication
-- Authorization
-- Request logging
-- Error handling
-- Request processing
-
-#### Validators
-
-Responsible for validating incoming request data before it reaches business logic.
-
-#### Controllers
-
-Handle HTTP requests and responses.
-
-Controllers should remain thin and delegate business logic to services.
-
-#### Services
-
-Contain application and business logic.
-
-Services communicate with models/repositories and return the required data to controllers.
-
-#### Models
-
-Define MongoDB schemas and database-level validation using Mongoose.
-
-#### Configuration
-
-Contains application configuration and environment-variable handling.
-
-#### Utilities
-
-Contains reusable helper functions that do not belong to a specific business module.
+---
 
 ## Technology Stack
 
-### Backend
+### Backend — `backend`
 
 - Node.js
 - Express.js
@@ -191,17 +207,33 @@ Contains reusable helper functions that do not belong to a specific business mod
 - Mongoose
 - JWT
 - bcrypt
+- Express Validator
 - CORS
 - Morgan
 - dotenv
 
-### Frontend
+### React Frontend — `frontend-reactjs`
 
 - React
 - TypeScript
-- Redux Toolkit
+- Vite
 - React Router
+- Redux Toolkit
 - Axios
+- React MUI
+- Zod where applicable
+
+### Next.js Frontend — `frontend-nextjs`
+
+- Next.js 16
+- React
+- TypeScript
+- App Router
+- React MUI
+- TanStack Query
+- TanStack Form
+- Axios
+- Zod
 
 ### Development & Quality
 
@@ -212,16 +244,18 @@ Contains reusable helper functions that do not belong to a specific business mod
 - Git
 - GitHub
 
+---
+
 ## Prerequisites
 
-Before running the project, make sure the following are installed:
+Install the following before running the project:
 
 - Node.js 20+ recommended
 - npm 10+ recommended
 - MongoDB 7+ or MongoDB Atlas
 - Git
 
-Verify the installations:
+Verify:
 
 ```bash
 node --version
@@ -229,18 +263,15 @@ npm --version
 git --version
 ```
 
-## Setup Instructions
+---
+
+## Initial Setup
 
 ### 1. Clone the repository
 
 ```bash
 git clone <YOUR_GITHUB_REPOSITORY_URL>
-```
-
-Navigate into the project:
-
-```bash
-cd task-management
+cd task-management-system
 ```
 
 ### 2. Install backend dependencies
@@ -250,42 +281,59 @@ cd backend
 npm install
 ```
 
-### 3. Configure backend environment variables
-
-Create a `.env` file inside the `backend` directory:
-
-```text
-backend/.env
-```
-
-Use the `.env.example` file as a reference.
-
-### 4. Install frontend dependencies
-
-From the project root:
-
-```bash
-cd ../frontend
-npm install
-```
-
-### 5. Configure frontend environment variables
+### 3. Configure backend environment
 
 Create:
 
 ```text
-frontend/.env
+backend/.env
 ```
 
-Use the `.env.example` file as a reference.
+Use `backend/.env.example` as the reference.
+
+### 4. Install React frontend dependencies
+
+From the repository root:
+
+```bash
+cd frontend-reactjs
+npm install
+```
+
+Create the local environment file if required:
+
+```text
+frontend-reactjs/.env
+```
+
+Use `frontend-reactjs/.env.example` as the reference.
+
+### 5. Install Next.js frontend dependencies
+
+From the repository root:
+
+```bash
+cd frontend-nextjs
+npm install
+```
+
+Create:
+
+```text
+frontend-nextjs/.env.local
+```
+
+Use the environment configuration expected by `src/config/env.ts`.
+
+---
 
 ## Environment Variables
 
-Environment-specific configuration must not be hard-coded into the source code.
+Environment-specific configuration must not be hard-coded into source code.
 
-Secrets such as database credentials and JWT secrets must never be committed to GitHub.
+Never commit real secrets to Git.
 
-### Backend Environment Variables
+### Backend
 
 File:
 
@@ -293,38 +341,29 @@ File:
 backend/.env
 ```
 
-Example:
+The backend configuration includes the following environment variables:
 
 ```env
 NODE_ENV=development
-
 PORT=5000
-
 API_PREFIX=/api/v1
-
-MONGODB_URI=mongodb://localhost:27017/task_management
-
-JWT_SECRET=your_secure_jwt_secret
-JWT_EXPIRES_IN=1d
+MONGODB_URI=mongodb://127.0.0.1:27017/task_management
+JWT_ACCESS_SECRET=your_access_secret
+JWT_REFRESH_SECRET=your_refresh_secret
+JWT_ACCESS_EXPIRES_IN=...
+JWT_REFRESH_EXPIRES_IN=...
+CORS_ORIGIN=...
+LOG_FORMAT=...
 ```
 
-### Environment Variable Description
+The exact values are environment-specific and must not be hard-coded.
 
-| Variable | Description | Example |
-|---|---|---|
-| `NODE_ENV` | Application environment | `development` |
-| `PORT` | Backend server port | `5000` |
-| `API_PREFIX` | REST API prefix | `/api/v1` |
-| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/task_management` |
-| `JWT_SECRET` | Secret used to sign JWT tokens | Secure random value |
-| `JWT_EXPIRES_IN` | JWT expiration duration | `1d` |
-
-### Frontend Environment Variables
+### React Frontend
 
 File:
 
 ```text
-frontend/.env
+frontend-reactjs/.env
 ```
 
 Example:
@@ -333,101 +372,111 @@ Example:
 VITE_API_BASE_URL=http://localhost:5000/api/v1
 ```
 
-| Variable | Description | Example |
-|---|---|---|
-| `VITE_API_BASE_URL` | Backend API base URL | `http://localhost:5000/api/v1` |
+### Next.js Frontend
 
-> Never commit `.env` files containing secrets. Commit `.env.example` files instead.
+File:
 
-## How to Run Backend
+```text
+frontend-nextjs/.env.local
+```
 
-Open a terminal and navigate to the backend:
+The API configuration is read through:
+
+```text
+frontend-nextjs/src/config/env.ts
+```
+
+Do not commit `.env`, `.env.local`, or files containing real secrets.
+
+---
+
+## How to Run the Backend
+
+Open Terminal 1:
 
 ```bash
 cd backend
-```
-
-Install dependencies:
-
-```bash
 npm install
-```
-
-Start the development server:
-
-```bash
 npm run dev
 ```
 
-The backend will be available at:
+Backend:
 
 ```text
 http://localhost:5000
 ```
 
-The API base URL is:
+API base URL:
 
 ```text
 http://localhost:5000/api/v1
 ```
 
-### Production Build
-
-Build the backend:
+### Backend Production Build
 
 ```bash
+cd backend
 npm run build
-```
-
-Start the production build:
-
-```bash
 npm start
 ```
 
-## How to Run Frontend
+---
 
-Open another terminal and navigate to the frontend:
+## How to Run React.js Frontend
 
-```bash
-cd frontend
-```
-
-Install dependencies:
+Open Terminal 2:
 
 ```bash
+cd frontend-reactjs
 npm install
-```
-
-Start the development server:
-
-```bash
 npm run dev
 ```
 
-The frontend will normally be available at:
+The Vite development server normally runs at:
 
 ```text
 http://localhost:5173
 ```
 
-### Production Build
-
-Build the frontend:
+### React Production Build
 
 ```bash
+cd frontend-reactjs
 npm run build
-```
-
-Preview the production build:
-
-```bash
 npm run preview
 ```
 
-## Running Backend and Frontend Together
+---
 
-Use two terminals.
+## How to Run Next.js Frontend
+
+Open Terminal 3:
+
+```bash
+cd frontend-nextjs
+npm install
+npm run dev
+```
+
+The Next.js development server normally runs at:
+
+```text
+http://localhost:3000
+```
+
+### Next.js Production Build
+
+```bash
+cd frontend-nextjs
+npm run build
+npm start
+```
+
+---
+
+## Run the Complete System
+
+The backend must be running before using either frontend.
 
 ### Terminal 1 — Backend
 
@@ -436,37 +485,99 @@ cd backend
 npm run dev
 ```
 
-### Terminal 2 — Frontend
+### Terminal 2 — React.js Frontend
 
 ```bash
-cd frontend
+cd frontend-reactjs
 npm run dev
 ```
 
-The application will then use:
+### Terminal 3 — Next.js Frontend
+
+```bash
+cd frontend-nextjs
+npm run dev
+```
+
+The development setup is:
 
 ```text
-Frontend
+React.js
 http://localhost:5173
-
-        │
-        │ REST API
-        ▼
-
-Backend
-http://localhost:5000/api/v1
-
-        │
-        ▼
-
-MongoDB
+      │
+      │
+      ├──────────────┐
+      │              │
+      ▼              ▼
+Next.js          Backend API
+:3000            :5000/api/v1
+                     │
+                     ▼
+                  MongoDB
 ```
+
+You can run either frontend independently against the same backend API.
+
+---
+
+## Authentication
+
+Authentication is implemented through the backend API using JWT access and refresh tokens.
+
+The authentication flow includes:
+
+1. User registration
+2. User login
+3. Access token generation
+4. Refresh token generation
+5. Protected API requests
+6. Current-user/profile API
+7. Logout and refresh-token revocation handling
+
+### Next.js Authentication Routes
+
+The Next.js application uses the App Router:
+
+```text
+/auth       → Login / Register
+/dashboard  → Protected dashboard
+/tasks      → Protected task management
+```
+
+The root route redirects to `/auth`.
+
+Authentication-related Next.js components are organized under:
+
+```text
+frontend-nextjs/src/components/auth/
+```
+
+---
+
+## Frontend Theme
+
+The Next.js frontend supports:
+
+- System mode — default
+- Light mode
+- Dark mode
+
+Theme selection is handled through the application theme/provider structure and the `ThemeModeSelector` component.
+
+Relevant files:
+
+```text
+frontend-nextjs/src/components/layout/ThemeModeSelector.tsx
+frontend-nextjs/src/components/layout/AppHeader.tsx
+frontend-nextjs/src/providers/MuiProvider.tsx
+frontend-nextjs/src/providers/AppProviders.tsx
+```
+
+---
 
 ## API Health Check
 
-The backend provides a basic health/root endpoint to verify that the API is running.
-
-Example:
+The backend provides a root API endpoint for checking whether the server is running.
 
 ```http
 GET /api/v1
@@ -481,11 +592,13 @@ Expected response:
 }
 ```
 
+---
+
 ## Development Principles
 
 The project follows these principles:
 
-- TypeScript throughout the application
+- TypeScript throughout backend and frontend applications
 - Separation of concerns
 - Modular architecture
 - Thin controllers
@@ -495,60 +608,75 @@ The project follows these principles:
 - Environment-based configuration
 - Secure password hashing
 - JWT-based authentication
+- Protected APIs and routes
 - Request validation
 - MongoDB indexes where required
 - Consistent API responses
 - Pagination for large datasets
 - Filtering, searching, and sorting where applicable
+- Backend-calculated dashboard statistics
 - Automated testing
 - Clean and maintainable code
 
+---
+
 ## Security
 
-The application follows common backend security practices including:
+The application follows common security practices including:
 
-- Password hashing using bcrypt
-- JWT-based authentication
+- Password hashing with bcrypt
+- JWT access and refresh tokens
 - Protected API endpoints
-- Authorization middleware
+- Authentication and authorization middleware
+- Refresh-token validation/revocation
 - Environment-based secrets
 - Request validation
 - CORS configuration
 - Centralized error handling
 - No secrets committed to source control
 
+---
+
 ## Git Workflow
 
-The repository contains both applications:
+The repository contains three application areas:
 
 ```text
-task-management/
+task-management-system/
 ├── backend/
-└── frontend/
+├── frontend-reactjs/
+└── frontend-nextjs/
 ```
 
-Changes can be committed independently or together depending on the feature.
-
-Example:
+### Backend change
 
 ```bash
 git add backend/
-git commit -m "feat: implement user authentication"
+git commit -m "feat: update task API"
 ```
 
-Or:
+### React.js change
 
 ```bash
-git add frontend/
-git commit -m "feat: add login page"
+git add frontend-reactjs/
+git commit -m "feat: update React task UI"
 ```
 
-For a complete feature involving both applications:
+### Next.js change
 
 ```bash
-git add backend/ frontend/
-git commit -m "feat: implement task management"
+git add frontend-nextjs/
+git commit -m "feat: update Next.js task UI"
 ```
+
+### Complete feature
+
+```bash
+git add backend/ frontend-reactjs/ frontend-nextjs/
+git commit -m "feat: implement task management feature"
+```
+
+---
 
 ## License
 

@@ -14,6 +14,7 @@ import {
 
 import { useNotification } from "@/providers/NotificationProvider";
 import { authStorage } from "@/utils/auth-storage";
+import ThemeModeSelector from "./ThemeModeSelector";
 
 interface AppHeaderProps {
   userName: string;
@@ -30,8 +31,7 @@ export default function AppHeader({ userName }: AppHeaderProps) {
 
     showSuccess("Logged out successfully");
 
-    router.push("/auth");
-    router.refresh();
+    router.replace("/auth");
   };
 
   const isActive = (path: string): boolean => {
@@ -98,6 +98,8 @@ export default function AppHeader({ userName }: AppHeaderProps) {
             </Box>
           </Box>
 
+          <ThemeModeSelector />
+
           {/* Right side */}
           <Box
             sx={{
@@ -107,7 +109,10 @@ export default function AppHeader({ userName }: AppHeaderProps) {
             }}
           >
             <Typography
-            //  variant="body1" fontWeight={500}
+              variant="body1"
+              sx={{
+                fontWeight: 500,
+              }}
             >
               {userName}
             </Typography>

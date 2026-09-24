@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { Box } from "@mui/material";
 
+import AuthGuard from "@/components/auth/AuthGuard";
 import AppHeader from "@/components/layout/AppHeader";
 import type { AuthUser } from "@/types/auth.types";
 import { authStorage } from "@/utils/auth-storage";
-import { useEffect, useState } from "react";
 
 interface AuthenticatedLayoutProps {
   children: React.ReactNode;
@@ -23,24 +25,26 @@ export default function AuthenticatedLayout({
   }, []);
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <AppHeader userName={user?.name || ""} />
-
+    <AuthGuard>
       <Box
-        component="main"
         sx={{
-          flex: 1,
-          p: 3,
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        {children}
+        <AppHeader userName={user?.name || ""} />
+
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
+            p: 3,
+          }}
+        >
+          {children}
+        </Box>
       </Box>
-    </Box>
+    </AuthGuard>
   );
 }

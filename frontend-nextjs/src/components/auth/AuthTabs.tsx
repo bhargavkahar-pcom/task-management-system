@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Box, Paper, Tab, Tabs, Typography } from "@mui/material";
 
@@ -31,11 +31,13 @@ export default function AuthTabs() {
       }}
     >
       <Typography
-      // variant="h5"
-      // component="h1"
-      // textAlign="center"
-      // fontWeight={600}
-      // mb={2}
+        variant="h5"
+        component="h1"
+        sx={{
+          fontWeight: 600,
+          textAlign: "center",
+          mb: 2,
+        }}
       >
         Task Management System
       </Typography>
